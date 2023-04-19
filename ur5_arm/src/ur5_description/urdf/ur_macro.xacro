@@ -50,8 +50,8 @@
      - Muhammad Asif Rana
   -->
 
-  <xacro:include filename="$(find ur_description)/urdf/inc/ur_transmissions.xacro" />
-  <xacro:include filename="$(find ur_description)/urdf/inc/ur_common.xacro" />
+  <xacro:include filename="$(find ur5_description)/urdf/inc/ur_transmissions.xacro" />
+  <xacro:include filename="$(find ur5_description)/urdf/inc/ur_common.xacro" />
 
   <xacro:macro name="ur_robot" params="
     name
@@ -105,7 +105,7 @@
 
 
     <!-- ros2 control include -->
-    <xacro:include filename="$(find ur_description)/urdf/ur.ros2_control.xacro" />
+    <xacro:include filename="$(find ur5_description)/urdf/ur.ros2_control.xacro" />
     <!-- ros2 control instance -->
     <xacro:ur_ros2_control
       name="${name}"

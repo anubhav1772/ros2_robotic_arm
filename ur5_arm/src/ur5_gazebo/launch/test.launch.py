@@ -16,7 +16,7 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
     pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
 
-    gazebo = IncludeLaunchDescription(PythonLaunchDescriptionSource([os.path.join(get_package_share_directory('gazebo_ros'), 'launch')]))
+    gazebo = IncludeLaunchDescription(PythonLaunchDescriptionSource([os.path.join(get_package_share_directory('gazebo_ros'), 'launch'), '/gazebo.launch.py']),)
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     robot_name = 'ur'
     world_file_name = 'empty.world'
