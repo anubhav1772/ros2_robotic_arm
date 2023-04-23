@@ -53,6 +53,13 @@ def generate_launch_description():
     )
     declared_arguments.append(
         DeclareLaunchArgument(
+            "moveit_package",
+            default_value="ur5_moveit_config",
+            description="moveit package.",
+        )
+    )
+    declared_arguments.append(
+        DeclareLaunchArgument(
             "description_file",
             default_value="ur.urdf.xacro",
             description="URDF/XACRO description file with the robot.",
@@ -75,6 +82,7 @@ def generate_launch_description():
     safety_k_position = LaunchConfiguration("safety_k_position")
     # General arguments
     description_package = LaunchConfiguration("description_package")
+    moveit_package = LaunchConfiguration("moveit_package")
     description_file = LaunchConfiguration("description_file")
     tf_prefix = LaunchConfiguration("tf_prefix")
 
@@ -106,7 +114,7 @@ def generate_launch_description():
     robot_description = {"robot_description": robot_description_content}
 
     rviz_config_file = PathJoinSubstitution(
-        [FindPackageShare(description_package), "rviz", "view_robot.rviz"]
+        [FindPackageShare(moveit_package), "rviz", "view_robot.rviz"]
     )
 
     joint_state_publisher_node = Node(
