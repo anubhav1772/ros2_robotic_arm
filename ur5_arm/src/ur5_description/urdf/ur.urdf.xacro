@@ -107,8 +107,8 @@
     </gazebo>
 
     <gazebo reference="$(arg tf_prefix)base_link_inertia">
-      <!-- <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
+      <!-- <mu1>2</mu1>
+      <mu2>2</mu2>
       <kp>1000000.0</kp>
       <kd>1.0</kd> -->
       <self_collide>true</self_collide>
