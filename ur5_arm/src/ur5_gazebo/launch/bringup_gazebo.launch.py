@@ -11,10 +11,13 @@ from launch_ros.parameter_descriptions import ParameterValue
 from ament_index_python.packages import get_package_share_directory
 from launch.event_handlers import OnProcessExit
 
+# ros2 topic pub /arm_controller/joint_trajectory trajectory_msgs/JointTrajectory '{header: {stamp: {sec: 0, nanosec: 0}, frame_id: "base_link"}, joint_names: ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint"], points: [{positions: [1.57, 1.57, 0.0, 0.0, 0.0, 0.0], velocities: [], accelerations: [], time_from_start: {sec: 1, nanosec: 0}}]}'
+
 
 # process has died [pid 13572, exit code 255, cmd 
 # 'gzserver -slibgazebo_ros_init.so -slibgazebo_ros_factory.so 
 # -slibgazebo_ros_force_system.so'].
+# For getting rid of above error, kill gzserver and gzclient.
 def generate_launch_description():
     # Set the path to the Gazebo ROS package
     pkg_gazebo_ros = FindPackageShare(package='gazebo_ros').find('gazebo_ros')   
@@ -47,6 +50,9 @@ def generate_launch_description():
     # urdf_model_path = os.path.join(desc_pkg_share, 'urdf/ur.urdf.xacro')
     xacro_file_path = os.path.join(desc_pkg_share, 'urdf/', 'ur.urdf.xacro')
     # print(xacro_file_path)
+
+    controller_file = os.path.join(gaz_pkg_share, "config", "ur5_controllers.yaml")
+    # print(controller_file)
 
     # print(pkg_gazebo_ros)
     # print(desc_pkg_share)
@@ -164,15 +170,33 @@ def generate_launch_description():
         parameters=[{"robot_description": robot_desc}],
         output="screen")
     
-    load_joint_state_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'configured', 'joint_state_broadcaster'],
-        output='screen'
-    )
+    # ros2_control_node = Node(
+    #     package="controller_manager",
+    #     executable="ros2_control_node",
+    #     parameters=[robot_desc, controller_file],
+    #     output={
+    #             "stdout": "screen",
+    #             "stderr": "screen",
+    #         },
+    #     )
+    # executable is not 'spawner.py' but 'spawner'
+    # Check if the spawner file is present in the libexec directory of the 
+    # controller_manager package. You can do this by navigating to the libexec 
+    # directory (/home/anubhav1772/ros2_ws/install/controller_manager/lib/controller_manager) 
+    # and checking if the file is present.
+    load_joint_state_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],)
 
-    load_arm_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'configured', 'arm_controller'],
-        output='screen'
-    )
+    # load_arm_controller = ExecuteProcess(
+    #     cmd=['ros2', 'control', 'load_controller', '--set-state', 'configured', 'arm_controller'],
+    #     output='screen')
+
+    load_arm_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["arm_controller", "-c", "/controller_manager"],)
 
     spawn_entity_cmd = Node(
         package='gazebo_ros', 
@@ -182,62 +206,58 @@ def generate_launch_description():
         arguments=['-entity', 'ur', 
                     '-topic', '/robot_description'])
     
-    # return LaunchDescription([
-    #     declare_use_simulator_cmd,
-    #     declare_simulator_cmd,
-    #     declare_use_sim_time_cmd,
-    #     declare_world_cmd,
-    #     RegisterEventHandler(
-    #         event_handler=OnProcessExit(
-    #             target_action=spawn_entity_cmd,
-    #             on_exit=[load_joint_state_controller],
-    #         )
-    #     ),
-    #     RegisterEventHandler(
-    #         event_handler=OnProcessExit(
-    #             target_action=load_joint_state_controller,
-    #             on_exit=[load_arm_controller],
-    #         )
-    #     ),
-    #     gazebo,
-    #     spawn_entity_cmd,
-    # ])
+    return LaunchDescription([
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_state_controller,
+                on_exit=[load_arm_controller],
+            )
+        ),
+        declare_use_simulator_cmd,
+        declare_simulator_cmd,
+        declare_use_sim_time_cmd,
+        declare_world_cmd,
+        gazebo,
+        spawn_entity_cmd,
+        load_joint_state_controller
+    ])
 
-    ld = LaunchDescription()
+    # ld = LaunchDescription()
     
-    # Declare the launch options
-    ld.add_action(declare_use_simulator_cmd)
-    ld.add_action(declare_simulator_cmd)
-    ld.add_action(declare_use_sim_time_cmd)
-    ld.add_action(declare_world_cmd)
-    # ld.add_action(declare_urdf_model_path_cmd)
-    # ld.add_action(declare_use_fake_hardware)
-    ld.add_action(declare_controllers_file)
-    # ld.add_action(start_gazebo_server_cmd)
-    # ld.add_action(start_gazebo_client_cmd)
-    # ld.add_action(RegisterEventHandler(
-    #     event_handler=OnProcessExit(
-    #         target_action=spawn_entity_cmd,
-    #         on_exit=[load_joint_state_controller],
-    #     )
-    # ))
-    # ld.add_action(RegisterEventHandler(
-    #     event_handler=OnProcessExit(
-    #         target_action=load_joint_state_controller,
-    #         on_exit=[load_arm_controller],
-    #     )
-    # ))
-    ld.add_action(gazebo)
-    ld.add_action(spawn_entity_cmd)
-    ld.add_action(load_joint_state_controller)
-    ld.add_action(load_arm_controller)
-    # ld.add_action(
-    #     TimerAction(
-    #         period=0.0,
-    #         actions=[spawn_entity_cmd]))
-    # ld.add_action(
-    #     TimerAction(
-    #         period=0.0,
-    #         actions=[robot_state_publisher]))
+    # # Declare the launch options
+    # ld.add_action(declare_use_simulator_cmd)
+    # ld.add_action(declare_simulator_cmd)
+    # ld.add_action(declare_use_sim_time_cmd)
+    # ld.add_action(declare_world_cmd)
+    # # ld.add_action(declare_urdf_model_path_cmd)
+    # # ld.add_action(declare_use_fake_hardware)
+    # ld.add_action(declare_controllers_file)
+    # # ld.add_action(start_gazebo_server_cmd)
+    # # ld.add_action(start_gazebo_client_cmd)
+    # # ld.add_action(RegisterEventHandler(
+    # #     event_handler=OnProcessExit(
+    # #         target_action=spawn_entity_cmd,
+    # #         on_exit=[load_joint_state_controller],
+    # #     )
+    # # ))
+    # # ld.add_action(RegisterEventHandler(
+    # #     event_handler=OnProcessExit(
+    # #         target_action=load_joint_state_controller,
+    # #         on_exit=[load_arm_controller],
+    # #     )
+    # # ))
+    # ld.add_action(gazebo)
+    # # ld.add_action(ros2_control_node)
+    # ld.add_action(spawn_entity_cmd)
+    # ld.add_action(load_joint_state_controller)
+    # ld.add_action(load_arm_controller)
+    # # ld.add_action(
+    # #     TimerAction(
+    # #         period=0.0,
+    # #         actions=[spawn_entity_cmd]))
+    # # ld.add_action(
+    # #     TimerAction(
+    # #         period=0.0,
+    # #         actions=[robot_state_publisher]))
 
-    return ld
+    # return ld
