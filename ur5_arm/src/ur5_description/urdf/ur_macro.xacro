@@ -140,7 +140,7 @@
       />
 
     <!-- Add URDF transmission elements (for ros_control) -->
-    <!--<xacro:ur_arm_transmission prefix="${prefix}" hw_interface="${transmission_hw_interface}" />-->
+    <xacro:ur_arm_transmission tf_prefix="${tf_prefix}" hw_interface="${transmission_hw_interface}" />
     <!-- Placeholder for ros2_control transmission which don't yet exist -->
 
     <!-- links -  main serial chain -->
