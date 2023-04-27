@@ -16,11 +16,9 @@ def generate_launch_description():
             "ur_type",
             description="Type/series of used UR robot.",
             default_value="ur5",
-            choices=["ur5"],
         )
     )
-    # TODO(anyone): enable this when added into ROS2-foxy
-    # choices=['ur3', 'ur3e', 'ur5', 'ur5e', 'ur10', 'ur10e', 'ur16e']))
+ 
     declared_arguments.append(
         DeclareLaunchArgument(
             "safety_limits",
@@ -125,7 +123,7 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         output="both",
-        parameters=[robot_description],
+        parameters=[{"use_sim_time": True}, robot_description],
     )
     rviz_node = Node(
         package="rviz2",
