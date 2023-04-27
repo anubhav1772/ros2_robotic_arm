@@ -11,7 +11,7 @@ from launch_ros.parameter_descriptions import ParameterValue
 from ament_index_python.packages import get_package_share_directory
 from launch.event_handlers import OnProcessExit
 
-# ros2 topic pub /arm_controller/joint_trajectory trajectory_msgs/JointTrajectory '{header: {stamp: {sec: 0, nanosec: 0}, frame_id: "base_link"}, joint_names: ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint"], points: [{positions: [1.57, 1.57, 0.0, 0.0, 0.0, 0.0], velocities: [], accelerations: [], time_from_start: {sec: 1, nanosec: 0}}]}'
+# ros2 topic pub /ur_manipulator/joint_trajectory trajectory_msgs/JointTrajectory '{header: {stamp: {sec: 0, nanosec: 0}, frame_id: "base_link"}, joint_names: ["shoulder_pan_joint", "shoulder_lift_joint", "elbow_joint", "wrist_1_joint", "wrist_2_joint", "wrist_3_joint"], points: [{positions: [1.57, 1.57, 0.0, 0.0, 0.0, 0.0], velocities: [], accelerations: [], time_from_start: {sec: 1, nanosec: 0}}]}'
 
 
 # process has died [pid 13572, exit code 255, cmd 
@@ -28,7 +28,7 @@ def generate_launch_description():
     gaz_pkg_share = FindPackageShare(package='ur5_gazebo').find('ur5_gazebo')
 
     # Set the path to the world file
-    world_file_name = 'empty.world'
+    world_file_name = 'pick_place.world'
     world_path = os.path.join(gaz_pkg_share, 'worlds', world_file_name)
     
     # Set the path to the SDF model files.
@@ -189,14 +189,14 @@ def generate_launch_description():
         executable="spawner",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],)
 
-    # load_arm_controller = ExecuteProcess(
-    #     cmd=['ros2', 'control', 'load_controller', '--set-state', 'configured', 'arm_controller'],
+    # load_ur_manipulator_controller = ExecuteProcess(
+    #     cmd=['ros2', 'control', 'load_controller', '--set-state', 'configured', 'ur_manipulator_controller'],
     #     output='screen')
 
-    load_arm_controller = Node(
+    load_ur_manipulator_controller = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["arm_controller", "-c", "/controller_manager"],)
+        arguments=["ur_manipulator_controller", "-c", "/controller_manager"],)
 
     spawn_entity_cmd = Node(
         package='gazebo_ros', 
@@ -210,7 +210,7 @@ def generate_launch_description():
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_joint_state_controller,
-                on_exit=[load_arm_controller],
+                on_exit=[load_ur_manipulator_controller],
             )
         ),
         declare_use_simulator_cmd,
@@ -243,14 +243,14 @@ def generate_launch_description():
     # # ld.add_action(RegisterEventHandler(
     # #     event_handler=OnProcessExit(
     # #         target_action=load_joint_state_controller,
-    # #         on_exit=[load_arm_controller],
+    # #         on_exit=[load_ur_manipulator],
     # #     )
     # # ))
     # ld.add_action(gazebo)
     # # ld.add_action(ros2_control_node)
     # ld.add_action(spawn_entity_cmd)
     # ld.add_action(load_joint_state_controller)
-    # ld.add_action(load_arm_controller)
+    # ld.add_action(load_ur_manipulator)
     # # ld.add_action(
     # #     TimerAction(
     # #         period=0.0,

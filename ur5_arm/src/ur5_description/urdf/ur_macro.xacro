@@ -296,7 +296,7 @@
       <xacro:if value="${safety_limits}">
          <safety_controller soft_lower_limit="${shoulder_pan_lower_limit + safety_pos_margin}" soft_upper_limit="${shoulder_pan_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
       </xacro:if>
-      <dynamics damping="0" friction="0"/>
+      <dynamics damping="0.15" friction="0"/>
     </joint>
     <joint name="${tf_prefix}shoulder_lift_joint" type="revolute">
       <parent link="${tf_prefix}shoulder_link" />
@@ -308,7 +308,7 @@
       <xacro:if value="${safety_limits}">
          <safety_controller soft_lower_limit="${shoulder_lift_lower_limit + safety_pos_margin}" soft_upper_limit="${shoulder_lift_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
       </xacro:if>
-      <dynamics damping="0" friction="0"/>
+      <dynamics damping="0.15" friction="0"/>
     </joint>
     <joint name="${tf_prefix}elbow_joint" type="revolute">
       <parent link="${tf_prefix}upper_arm_link" />
@@ -320,7 +320,7 @@
       <xacro:if value="${safety_limits}">
          <safety_controller soft_lower_limit="${elbow_joint_lower_limit + safety_pos_margin}" soft_upper_limit="${elbow_joint_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
       </xacro:if>
-      <dynamics damping="0" friction="0"/>
+      <dynamics damping="0.15" friction="0"/>
     </joint>
     <joint name="${tf_prefix}wrist_1_joint" type="revolute">
       <parent link="${tf_prefix}forearm_link" />
@@ -332,7 +332,7 @@
       <xacro:if value="${safety_limits}">
          <safety_controller soft_lower_limit="${wrist_1_lower_limit + safety_pos_margin}" soft_upper_limit="${wrist_1_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
       </xacro:if>
-      <dynamics damping="0" friction="0"/>
+      <dynamics damping="0.3" friction="0"/>
     </joint>
     <joint name="${tf_prefix}wrist_2_joint" type="revolute">
       <parent link="${tf_prefix}wrist_1_link" />
@@ -344,7 +344,7 @@
       <xacro:if value="${safety_limits}">
          <safety_controller soft_lower_limit="${wrist_2_lower_limit + safety_pos_margin}" soft_upper_limit="${wrist_2_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
       </xacro:if>
-      <dynamics damping="0" friction="0"/>
+      <dynamics damping="0.15" friction="0"/>
     </joint>
     <joint name="${tf_prefix}wrist_3_joint" type="revolute">
       <parent link="${tf_prefix}wrist_2_link" />
@@ -356,7 +356,7 @@
       <xacro:if value="${safety_limits}">
          <safety_controller soft_lower_limit="${wrist_3_lower_limit + safety_pos_margin}" soft_upper_limit="${wrist_3_upper_limit - safety_pos_margin}" k_position="${safety_k_position}" k_velocity="0.0"/>
       </xacro:if>
-      <dynamics damping="0" friction="0"/>
+      <dynamics damping="0.15" friction="0"/>
     </joint>
 
     <link name="${tf_prefix}ft_frame"/>

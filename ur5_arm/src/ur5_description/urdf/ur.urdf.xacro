@@ -15,7 +15,7 @@
    <xacro:arg name="kinematics_params" default="$(find ur5_description)/config/default_kinematics.yaml"/>
    <xacro:arg name="physical_params" default="$(find ur5_description)/config/physical_parameters.yaml"/>
    <xacro:arg name="visual_params" default="$(find ur5_description)/config/visual_parameters.yaml"/>
-   <xacro:arg name="transmission_hw_interface" default=""/>
+   <xacro:arg name="transmission_hw_interface" default="hardware_interface/PositionJointInterface"/>
    <xacro:arg name="safety_limits" default="false"/>
    <xacro:arg name="safety_pos_margin" default="0.15"/>
    <xacro:arg name="safety_k_position" default="20"/>
@@ -95,7 +95,7 @@
      reverse_ip="$(arg reverse_ip)"
      script_command_port="$(arg script_command_port)"
      >
-     <origin xyz="0 0 0" rpy="0 0 0" />          <!-- position robot in the world -->
+     <origin xyz="0 0 1" rpy="0 0 0" />          <!-- position robot in the world -->
    </xacro:ur_robot>
 
    <xacro:if value="$(arg sim_gazebo)">
@@ -104,69 +104,82 @@
     </gazebo>
 
     <gazebo reference="$(arg tf_prefix)base_link">
+      <mu1>2</mu1>
+      <mu2>2</mu2>
+      <self_collide>true</self_collide>
     </gazebo>
 
     <gazebo reference="$(arg tf_prefix)base_link_inertia">
-      <!-- <mu1>2</mu1>
+      <mu1>2</mu1>
       <mu2>2</mu2>
-      <kp>1000000.0</kp>
-      <kd>1.0</kd> -->
+      <!-- kp>1000000.0</kp>
+      <kd>1.0</kd>-->
       <self_collide>true</self_collide>
       <!-- <max_contacts>10</max_contacts> -->
     </gazebo>
 
     <gazebo reference="$(arg tf_prefix)shoulder_link">
-      <!-- <mu1>0.2</mu1>
-      <mu2>0.2</mu2>
-      <kp>1000000.0</kp>
-      <kd>1.0</kd> -->
       <self_collide>true</self_collide>
       <!-- <max_contacts>10</max_contacts> -->
+      <kp>1000000.0</kp>
+      <kd>1.0</kd>
+      <mu1>0.2</mu1>
+      <mu2>0.2</mu2>
+      <maxVel>0.0</maxVel>
+      <minDepth>0.001</minDepth>
     </gazebo>
 
     <gazebo reference="$(arg tf_prefix)upper_arm_link">
-      <!-- <mu1>0.2</mu1>
+      <mu1>0.2</mu1>
       <mu2>0.2</mu2>
       <kp>1000000.0</kp>
-      <kd>1.0</kd> -->
+      <kd>1.0</kd>
       <self_collide>true</self_collide>
       <!-- <max_contacts>10</max_contacts> -->
     </gazebo>
 
     <gazebo reference="$(arg tf_prefix)forearm_link">
-      <!-- <mu1>0.2</mu1>
+      <mu1>0.2</mu1>
       <mu2>0.2</mu2>
       <kp>1000000.0</kp>
-      <kd>1.0</kd> -->
+      <kd>1.0</kd>
       <self_collide>true</self_collide>
       <!-- <max_contacts>10</max_contacts> -->
     </gazebo>
 
     <gazebo reference="$(arg tf_prefix)wrist_1_link">
-      <!-- <mu1>0.2</mu1>
+      <mu1>0.2</mu1>
       <mu2>0.2</mu2>
       <kp>1000000.0</kp>
-      <kd>1.0</kd> -->
+      <kd>1.0</kd>
       <self_collide>true</self_collide>
       <!-- <max_contacts>10</max_contacts> -->
     </gazebo>
 
     <gazebo reference="$(arg tf_prefix)wrist_2_link">
-      <!-- <mu1>0.2</mu1>
+      <mu1>0.2</mu1>
       <mu2>0.2</mu2>
       <kp>1000000.0</kp>
-      <kd>1.0</kd> -->
+      <kd>1.0</kd>
       <self_collide>true</self_collide>
       <!-- <max_contacts>10</max_contacts> -->
     </gazebo>
 
     <gazebo reference="$(arg tf_prefix)wrist_3_link">
-      <!-- <mu1>0.2</mu1>
+      <mu1>0.2</mu1>
       <mu2>0.2</mu2>
       <kp>1000000.0</kp>
-      <kd>1.0</kd> -->
+      <kd>1.0</kd>
       <self_collide>true</self_collide>
       <!-- <max_contacts>10</max_contacts> -->
+    </gazebo>
+
+    <!-- <gazebo reference="$(arg tf_prefix)flange">
+      <self_collide>true</self_collide>
+    </gazebo> -->
+
+    <gazebo reference="$(arg tf_prefix)tool0">
+      <self_collide>true</self_collide>
     </gazebo>
 
     <gazebo>

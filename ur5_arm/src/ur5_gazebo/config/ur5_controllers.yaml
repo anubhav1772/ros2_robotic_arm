@@ -1,14 +1,24 @@
 controller_manager:
   ros__parameters:
-    update_rate: 125 # Hz
+    update_rate: 100 # Hz
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    arm_controller:
+    ur_manipulator_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-arm_controller:
+joint_state_broadcaster:
+  ros__parameters:
+    joints:
+      - shoulder_pan_joint
+      - shoulder_lift_joint
+      - elbow_joint
+      - wrist_1_joint
+      - wrist_2_joint
+      - wrist_3_joint
+
+ur_manipulator_controller:
   ros__parameters:
     joints:
       - shoulder_pan_joint
@@ -22,7 +32,7 @@ arm_controller:
       - position
     state_interfaces:
       - position
-    state_publish_rate: 50.0
+    state_publish_rate: 100.0
     action_monitor_rate: 20.0
     allow_partial_joints_goal: true
     constraints:
