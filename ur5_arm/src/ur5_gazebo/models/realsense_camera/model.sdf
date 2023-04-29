@@ -1,6 +1,8 @@
 <?xml version="1.0"?>
 <sdf version="1.6">
   <model name="realsense_camera">
+    <!-- <pose>0 0 1 0 0 0</pose> -->
+    <static>1</static>
     <link name="realsense_link">
       <pose>0 0 0.25 0 0 0</pose>
       <visual name="realsense_link_visual">
@@ -120,13 +122,16 @@
         <update_rate>1</update_rate>
         <visualize>0</visualize>
       </sensor>
+      <self_collide>0</self_collide>
+      <enable_wind>0</enable_wind>
+      <kinematic>0</kinematic>
     </link>
 
-    <joint name="realsense_joint" type="fixed">
+    <!-- <joint name="realsense_joint" type="fixed">
       <parent>base_link</parent>
       <child>realsense_link</child>
       <pose>0.4 0 0.4 -1.57 0 -1.57</pose>
-    </joint>
+    </joint> -->
 
     <plugin name="camera" filename="librealsense_gazebo_plugin.so">
       <prefix>camera</prefix>
