@@ -10,7 +10,7 @@ from launch.conditions import IfCondition
 from launch.substitutions import Command, FindExecutable, LaunchConfiguration, PathJoinSubstitution
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
-from ur5_moveit_config.launch_common import load_yaml
+from ur5_moveit_config.launch_common import load_yaml, load_yaml_abs
 
 
 def launch_setup(context, *args, **kwargs):
@@ -31,7 +31,6 @@ def launch_setup(context, *args, **kwargs):
     prefix = LaunchConfiguration("prefix")
     use_sim_time = LaunchConfiguration("use_sim_time")
     launch_rviz = LaunchConfiguration("launch_rviz")
-    # launch_servo = LaunchConfiguration("launch_servo")
 
     joint_limit_params = PathJoinSubstitution(
         [FindPackageShare(description_package), "config", "joint_limits.yaml"]
@@ -119,9 +118,9 @@ def launch_setup(context, *args, **kwargs):
         [FindPackageShare(moveit_config_package), "config", "kinematics.yaml"]
     )
 
-    # robot_description_planning = {
-    # "robot_description_planning": load_yaml_abs(str(joint_limit_params.perform(context)))
-    # }
+    robot_description_planning = {
+    "robot_description_planning": load_yaml_abs(str(joint_limit_params.perform(context)))
+    }
 
     # Planning Configuration
     ompl_planning_pipeline_config = {
@@ -139,7 +138,6 @@ def launch_setup(context, *args, **kwargs):
     # the scaled_ur_manipulator does not work on fake hardware
     change_controllers = context.perform_substitution(use_fake_hardware)
     if change_controllers == "true":
-        # controllers_yaml["scaled_ur_manipulator"]["default"] = False
         controllers_yaml["ur_manipulator_controller"]["default"] = True
 
     moveit_controllers = {
@@ -175,7 +173,7 @@ def launch_setup(context, *args, **kwargs):
             robot_description,
             robot_description_semantic,
             robot_description_kinematics,
-            # robot_description_planning,
+            robot_description_planning,
             ompl_planning_pipeline_config,
             trajectory_execution,
             moveit_controllers,
@@ -196,6 +194,7 @@ def launch_setup(context, *args, **kwargs):
     rviz_config_file = PathJoinSubstitution(
         [FindPackageShare(moveit_config_package), "rviz", "view_robot.rviz"]
     )
+
     rviz_node = Node(
         package="rviz2",
         condition=IfCondition(launch_rviz),
@@ -208,36 +207,17 @@ def launch_setup(context, *args, **kwargs):
             robot_description_semantic,
             ompl_planning_pipeline_config,
             robot_description_kinematics,
-            # robot_description_planning,
+            robot_description_planning,
             warehouse_ros_config,
         ],
     )
 
-    # Servo node for realtime control
-    # servo_yaml = load_yaml("ur5_moveit_config", "config/ur_servo.yaml")
-    # servo_params = {"moveit_servo": servo_yaml}
-    # servo_node = Node(
-    #     package="moveit_servo",
-    #     condition=IfCondition(launch_servo),
-    #     executable="servo_node_main",
-    #     parameters=[
-    #         servo_params,
-    #         robot_description,
-    #         robot_description_semantic,
-    #     ],
-    #     output="screen",
-    # )
-
-    # nodes_to_start = [move_group_node, rviz_node, servo_node]
     nodes_to_start = [move_group_node, robot_state_publisher_node, rviz_node]
-
     return nodes_to_start
 
 
 def generate_launch_description():
-
     declared_arguments = []
-    # UR specific arguments
     declared_arguments.append(
         DeclareLaunchArgument(
             "ur_type",
@@ -340,7 +320,4 @@ def generate_launch_description():
     declared_arguments.append(
         DeclareLaunchArgument("launch_rviz", default_value="true", description="Launch RViz?")
     )
-    # declared_arguments.append(
-    #     DeclareLaunchArgument("launch_servo", default_value="true", description="Launch Servo?")
-    # )
     return LaunchDescription(declared_arguments + [OpaqueFunction(function=launch_setup)])
